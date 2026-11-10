@@ -8,7 +8,10 @@ export const SCENE_H = 180;
 export type Box = { x: number; y: number; w: number; h: number };
 
 export const SPOTS = {
-  bookcase: { x: 6, y: 10, w: 60, h: 124 },
+  // The bookcase is its own layer (plant and robot included) so it can swing open.
+  bookcase: { x: 6, y: 4, w: 60, h: 130 },
+  // The secret alcove hidden behind it.
+  alcove: { x: 8, y: 26, w: 56, h: 108 },
   trophy: { x: 47, y: 60, w: 12, h: 14 },
   corkboard: { x: 76, y: 28, w: 58, h: 42 },
   backpack: { x: 92, y: 110, w: 48, h: 48 },
@@ -20,14 +23,14 @@ export const SPOTS = {
   glow: { x: 84, y: 20, w: 160, h: 140 },
 } satisfies Record<string, Box>;
 
-/** Blinking lights painted as tiny DOM squares on top of the scene. */
-export const LEDS: { x: number; y: number; color: string; period: number; delay: number }[] = [
+/** Blinking lights painted as tiny DOM squares on top of the scene. `door: true` ones sit on the bookcase and swing with it. */
+export const LEDS: { x: number; y: number; color: string; period: number; delay: number; door?: boolean }[] = [
   { x: 233, y: 94, color: "#e8615a", period: 1.2, delay: 0 }, // breadboard
   { x: 205, y: 125, color: "#4fb069", period: 3, delay: 0.4 }, // PC power
-  { x: 50, y: 45, color: "#4fb069", period: 0.7, delay: 0.1 }, // router
-  { x: 53, y: 45, color: "#4fb069", period: 0.9, delay: 0.5 },
-  { x: 56, y: 45, color: "#ffb347", period: 1.7, delay: 0.2 },
-  { x: 52, y: 15, color: "#6fe3f0", period: 2.2, delay: 0.8 }, // robot antenna
+  { x: 50, y: 45, color: "#4fb069", period: 0.7, delay: 0.1, door: true }, // router
+  { x: 53, y: 45, color: "#4fb069", period: 0.9, delay: 0.5, door: true },
+  { x: 56, y: 45, color: "#ffb347", period: 1.7, delay: 0.2, door: true },
+  { x: 52, y: 15, color: "#6fe3f0", period: 2.2, delay: 0.8, door: true }, // robot antenna
   { x: 175, y: 155, color: "#e8615a", period: 4, delay: 1 }, // power strip
 ];
 
@@ -52,3 +55,10 @@ export const MOTES: { x: number; y: number; delay: number }[] = [
   { x: 130, y: 64, delay: 3.4 },
   { x: 158, y: 40, delay: 2 },
 ];
+
+/** Stone ledges in the alcove (top edge y) and where each 16x16 trophy stands, in quest order. */
+export const ALCOVE_LEDGES = [57, 87, 117];
+export const TROPHY_SLOTS: { x: number; y: number }[] = ALCOVE_LEDGES.flatMap((ly) => [
+  { x: 15, y: ly - 16 },
+  { x: 41, y: ly - 16 },
+]);

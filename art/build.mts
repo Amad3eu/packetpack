@@ -3,6 +3,7 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { achievementArt } from "./achievements.mts";
 import { backpackArt } from "./backpack.mts";
 import { itemSprites } from "./items.mts";
 import { sceneArt } from "./scene.mts";
@@ -14,7 +15,7 @@ export const ART_DIR = join(dirname(fileURLToPath(import.meta.url)), "..", "publ
 export function renderArt(): Record<string, Buffer> {
   const out: Record<string, Buffer> = {};
   for (const [slug, c] of Object.entries(itemSprites())) out[`items/${slug}.png`] = c.png();
-  for (const [name, c] of Object.entries({ ...backpackArt(), ...sceneArt() })) out[`${name}.png`] = c.png();
+  for (const [name, c] of Object.entries({ ...backpackArt(), ...sceneArt(), ...achievementArt() })) out[`${name}.png`] = c.png();
   const ui = uiArt();
   for (const [name, c] of Object.entries(ui.scaled)) out[`${name}.png`] = c.png(UI_SCALE);
   for (const [name, c] of Object.entries(ui.native)) out[`${name}.png`] = c.png();

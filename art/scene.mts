@@ -2,7 +2,7 @@
 // (lamp glow, monitor screen, cat, steam, rain) that the React scene stacks on top.
 import { Canvas, sheet } from "./canvas.mts";
 import { P } from "./palette.mts";
-import { FAIRY_LIGHTS, SCENE_H, SCENE_W, SPOTS } from "../src/lib/scene.ts";
+import { ALCOVE_LEDGES, FAIRY_LIGHTS, SCENE_H, SCENE_W, SPOTS } from "../src/lib/scene.ts";
 
 /** Deterministic pseudo-random numbers, so the art is identical on every build. */
 function rng(seed: number) {
@@ -370,12 +370,55 @@ function floorProps(c: Canvas) {
   c.px(276, 127, P.yellow2);
 }
 
+/** The secret trophy room behind the bookcase: old stone, cobwebs and a faint magic glow. */
+function alcove(c: Canvas) {
+  const { x, y, w, h } = SPOTS.alcove;
+  c.rect(x, y, w, h, P.ink);
+  c.rect(x + 2, y + 2, w - 4, h - 4, P.plum1);
+  // staggered stone bricks
+  for (let row = 0, by = y + 2; by < y + h - 2; row++, by += 6) {
+    c.hline(x + 2, by, w - 4, P.plum0);
+    for (let bx = x + 2 + (row % 2 ? 0 : 5); bx < x + w - 2; bx += 10) c.vline(bx, by, 6, P.plum0);
+  }
+  // rounded arch at the top
+  c.grid(x + 2, y + 2, ["kkkk", "kk..", "k...", "k..."], { k: P.ink });
+  c.grid(x + w - 6, y + 2, ["kkkk", "..kk", "...k", "...k"], { k: P.ink });
+  // magic glow from above, Bayer-dithered like the lamp
+  const cx = x + w / 2;
+  for (let j = y + 2; j < y + h - 2; j++)
+    for (let i = x + 2; i < x + w - 2; i++) {
+      const d = Math.hypot(i - cx, (j - (y + 8)) * 0.7) / 14;
+      const band = Math.floor(d);
+      const pick = (d - band) * 16 > BAYER[j % 4][i % 4] ? band + 1 : band;
+      const col = ["#6fe3f040", "#7f73cf38", "#7f73cf20"][pick];
+      if (col) c.px(i, j, col);
+    }
+  // stone ledges
+  for (const ly of ALCOVE_LEDGES) {
+    c.box(x + 3, ly, w - 6, 4, { fill: P.grey2, light: P.grey3, shade: P.grey1, round: false });
+    c.rect(x + 3, ly + 4, w - 6, 2, "#00000060");
+  }
+  // cobwebs in the corners
+  c.grid(x + 2, y + 6, ["w.w.w", ".w.w.", "w.w..", ".w...", "w...."], { w: "#d8d9e366" });
+  c.grid(x + w - 7, y + 6, ["w.w.w", ".w.w.", "..w.w", "...w.", "....w"], { w: "#d8d9e366" });
+  // floor of the alcove
+  c.rect(x + 2, y + h - 6, w - 4, 4, P.plum0);
+}
+
+/** The bookcase alone, cut out of a full-size canvas so its pixel positions match the room. */
+function bookcaseLayer(): Canvas {
+  const full = new Canvas(SCENE_W, SCENE_H);
+  bookcase(full);
+  const b = SPOTS.bookcase;
+  return full.crop(b.x, b.y, b.w, b.h);
+}
+
 function room(): Canvas {
   const c = new Canvas(SCENE_W, SCENE_H);
   wall(c);
   floor(c);
   fairyLights(c);
-  bookcase(c);
+  alcove(c);
   corkboard(c);
   poster(c);
   windowAndCurtains(c);
@@ -486,6 +529,7 @@ export function sceneArt(): Record<string, Canvas> {
   return {
     "scene/room": room(),
     "scene/glow": glow(),
+    "scene/bookcase": bookcaseLayer(),
     "scene/screen": screenFrames(),
     "scene/cat": catFrames(),
     "scene/steam": steamFrames(),

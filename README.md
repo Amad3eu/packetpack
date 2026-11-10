@@ -24,13 +24,14 @@ Live: [packetpack.vercel.app](https://packetpack.vercel.app)
 
 ## Features
 
-- **A living room to explore.** Rain falls past the window, the monitor scrolls code, LEDs and fairy lights blink, dust drifts in the lamp light and the cat breathes in its sleep. The bookshelf opens the catalog, the corkboard opens the quest board and the trophy jumps to your quest log.
+- **A living room to explore.** Rain falls past the window, the monitor scrolls code, LEDs and fairy lights blink, dust drifts in the lamp light and the cat breathes in its sleep. The bookshelf opens the catalog and the corkboard opens the quest board.
 - **The backpack.** Click it: the zipper runs along the seam, the flap flips back and the inventory rises out of the bag. Items idle with a one-pixel bob; hover one and it lifts, casts a shadow and shows a pixel tooltip.
 - **Customization.** Name your pack and pick its colour, straps and patch.
 - **Workbench and catalog.** 16 devices, each with its own pixel sprite. The catalog adds search by name, maker or protocol, category and difficulty filters, and a side-by-side comparison of up to 3 devices.
 - **Device cards and profiles.** Each one has a description, manufacturer, official links, specs, protocols, learning, defense and authorized-testing uses, difficulty, an approximate price, GitHub and community resources, and related gear.
 - **Quest board.** Every device comes with project ideas. Filter them by difficulty or by "only gear in my pack"; the ones for your own gear are pinned in the workshop.
-- **Quest log.** RPG-style achievements unlocked by what you pack and how many profiles you read.
+- **A secret room.** Pull the trophy on the bookshelf: the bookcase rumbles and swings open on its hinge, showing a hidden stone alcove with a pixel trophy for every quest. Unlocked ones shine and locked ones are dark silhouettes. Esc or Close shuts it.
+- **Quest log.** RPG-style achievements unlocked by what you pack and how many profiles you read, also listed below the room.
 - **Saved locally.** Your pack, its look and your progress stay in your browser (`localStorage`). There are no accounts and no server.
 - **Accessible.** Every hotspot and item is a real button or link with a label, the item card is a native `<dialog>` (focus trap, Esc to close), tooltips also open on keyboard focus, and all animation stops with `prefers-reduced-motion`.
 
@@ -66,7 +67,7 @@ Every pixel is drawn in code. There are no image editors, no product photos and 
 
 - `art/canvas.mts` is a tiny RGBA canvas with a dependency-free PNG encoder. It provides pixels, shaded boxes, Bayer dithering and text-grid stamps.
 - `art/palette.mts` is the one limited palette everything shares.
-- `art/items.mts`, `art/backpack.mts`, `art/scene.mts` and `art/ui.mts` paint the devices, the 4-frame backpack, the bedroom with its animation sheets, and the game-menu frames and icons.
+- `art/items.mts`, `art/backpack.mts`, `art/scene.mts`, `art/achievements.mts` and `art/ui.mts` paint the devices, the 4-frame backpack, the bedroom (including the bookcase door and the secret alcove) with its animation sheets, the quest trophies, and the game-menu frames and icons.
 - `npm run art` writes the PNGs to `public/art/`. They are committed, so a deploy doesn't need to run it.
 
 On the page, sprites are `<img>` elements with `image-rendering: pixelated`, always shown at whole-number scales. The room is 320×180 native pixels scaled ×2, ×3 or ×4 by screen width. Menu frames are 9-slice PNGs pre-scaled ×3 and used through CSS `border-image`, so they stay crisp in every browser. Animations use CSS `steps()`, so things move one pixel at a time. Framer Motion handles the inventory pop-up.
@@ -75,7 +76,7 @@ Scene positions live in `src/lib/scene.ts`. Both the painter and the React hotsp
 
 ## Tech stack
 
-Next.js 16 (App Router, Cache Components), React 19, TypeScript, Tailwind CSS 4 and Framer Motion. The font is Pixelify Sans. Every page is prerendered at build time, including one static page per device.
+Next.js 16 (App Router, Cache Components), React 19, TypeScript, Tailwind CSS 4 and Framer Motion. The font is Jersey 10, a pixel font chosen because its digits stay distinct (5 vs S, 0 vs O), which matters in a catalog of specs. Every page is prerendered at build time, including one static page per device.
 
 ## Project structure
 

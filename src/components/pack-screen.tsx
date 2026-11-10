@@ -35,7 +35,7 @@ export function PackScreen() {
       <h1 className="sr-only">PACKETPACK: explore cybersecurity hardware and build your own inventory</h1>
 
       <div className="relative mx-auto" style={{ width: "min(100%, calc(var(--s) * 320px))" }}>
-        <RoomScene look={pack.look} frame={frame} open={open} onToggle={() => setOpen((o) => !o)} />
+        <RoomScene look={pack.look} frame={frame} open={open} onToggle={() => setOpen((o) => !o)} quests={quests} />
         <AnimatePresence>
           {open && <InventoryWindow items={items} onSelect={setSelected} onClose={() => setOpen(false)} />}
         </AnimatePresence>

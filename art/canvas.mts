@@ -162,6 +162,13 @@ export class Canvas {
       }
   }
 
+  /** A copy of one rectangle of this canvas. */
+  crop(x: number, y: number, w: number, h: number): Canvas {
+    const out = new Canvas(w, h);
+    for (let j = 0; j < h; j++) out.data.set(this.data.subarray(((y + j) * this.w + x) * 4, ((y + j) * this.w + x + w) * 4), j * w * 4);
+    return out;
+  }
+
   /** Encode as PNG, optionally upscaled with nearest-neighbour (for CSS border-image frames). */
   png(scale = 1): Buffer {
     const w = this.w * scale;

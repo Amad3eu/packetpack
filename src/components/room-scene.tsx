@@ -1,17 +1,11 @@
 /* eslint-disable @next/next/no-img-element -- pixel art must skip next/image's smoothing resize */
-import Link from "next/link";
 import { useEffect, useRef } from "react";
-import { FAIRY_LIGHTS, LEDS, MOTES, SPOTS, type Box } from "@/lib/scene";
+import type { Achievement } from "@/lib/achievements";
+import { FAIRY_LIGHTS, LEDS, MOTES, SPOTS } from "@/lib/scene";
 import { BackpackSprite } from "./backpack";
 import type { Look } from "./pack-provider";
-
-/** Position a layer in native scene pixels; `--s` (the world scale) turns them into CSS px. */
-const at = (b: Box): React.CSSProperties => ({
-  left: `calc(var(--s) * ${b.x}px)`,
-  top: `calc(var(--s) * ${b.y}px)`,
-  width: `calc(var(--s) * ${b.w}px)`,
-  height: `calc(var(--s) * ${b.h}px)`,
-});
+import { at, Hotspot, Led } from "./scene-parts";
+import { SecretBookcase } from "./secret-bookcase";
 
 function sheet(src: string, frameW: number, frameH: number, frames: number, dur: string) {
   return {
@@ -23,25 +17,16 @@ function sheet(src: string, frameW: number, frameH: number, frames: number, dur:
   } as React.CSSProperties;
 }
 
-function Hotspot(props: { box: Box; label: string; tip: string; href: string; tipInside?: boolean }) {
-  return (
-    <Link href={props.href} className="hotspot has-tip absolute" style={at(props.box)} aria-label={props.label}>
-      <span className="tip tooltip" style={props.tipInside ? { top: 4, bottom: "auto" } : undefined}>
-        {props.tip}
-      </span>
-    </Link>
-  );
-}
-
 type Props = {
   look: Look;
   frame: number;
   open: boolean;
   onToggle: () => void;
+  quests: Achievement[];
 };
 
 /** The bedroom workshop. Everything is one 320x180 pixel world scaled by a whole number. */
-export function RoomScene({ look, frame, open, onToggle }: Props) {
+export function RoomScene({ look, frame, open, onToggle, quests }: Props) {
   const viewport = useRef<HTMLDivElement>(null);
 
   // On narrow screens the room scrolls sideways; start with the backpack and desk in view.
@@ -77,38 +62,15 @@ export function RoomScene({ look, frame, open, onToggle }: Props) {
         {MOTES.map((m) => (
           <span key={`${m.x}-${m.y}`} aria-hidden className="mote bg-[#ffd27a]" style={{ ...at({ ...m, w: 1, h: 1 }), ["--delay" as string]: `${m.delay}s` }} />
         ))}
-        {LEDS.map((l) => (
-          <span
-            key={`${l.x}-${l.y}`}
-            aria-hidden
-            className="blink"
-            style={{
-              ...at({ x: l.x, y: l.y, w: 1, h: 1 }),
-              background: l.color,
-              boxShadow: `0 0 calc(var(--s) * 3px) ${l.color}`,
-              ["--period" as string]: `${l.period}s`,
-              ["--delay" as string]: `${l.delay}s`,
-            }}
-          />
+        {LEDS.filter((l) => !l.door).map((l) => (
+          <Led key={`${l.x}-${l.y}`} box={{ x: l.x, y: l.y, w: 1, h: 1 }} color={l.color} period={l.period} delay={l.delay} glow={3} />
         ))}
         {FAIRY_LIGHTS.map((l, i) => (
-          <span
-            key={l.x}
-            aria-hidden
-            className="blink"
-            style={{
-              ...at({ x: l.x, y: l.y, w: 2, h: 2 }),
-              background: l.color,
-              boxShadow: `0 0 calc(var(--s) * 4px) ${l.color}`,
-              ["--period" as string]: `${2.4 + (i % 3) * 0.7}s`,
-              ["--delay" as string]: `${i * 0.35}s`,
-            }}
-          />
+          <Led key={l.x} box={{ x: l.x, y: l.y, w: 2, h: 2 }} color={l.color} period={2.4 + (i % 3) * 0.7} delay={i * 0.35} glow={4} />
         ))}
 
-        <Hotspot box={SPOTS.bookcase} href="/catalog" label="Bookshelf: open the equipment catalog" tip="Catalog" tipInside />
+        <SecretBookcase quests={quests} />
         <Hotspot box={SPOTS.corkboard} href="/projects" label="Quest board: browse project ideas" tip="Quest board" tipInside />
-        <Hotspot box={SPOTS.trophy} href="#quests" label="Trophy: see your quest log" tip="Quest log" />
 
         {!open && (
           <span

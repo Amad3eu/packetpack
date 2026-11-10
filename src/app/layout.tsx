@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { Pixelify_Sans } from "next/font/google";
+import { Jersey_10 } from "next/font/google";
 import { MotionConfig } from "framer-motion";
 import { PackProvider } from "@/components/pack-provider";
 import { SiteHeader } from "@/components/site-header";
 import "./globals.css";
 
-const pixelify = Pixelify_Sans({ variable: "--font-pixelify", subsets: ["latin"] });
+// Jersey 10: a pixel font whose digits stay distinct (Pixelify drew 5 like S and Z like 2).
+const gameFont = Jersey_10({ variable: "--font-game", subsets: ["latin"], weight: "400" });
 
 export const metadata: Metadata = {
   title: { default: "PACKETPACK", template: "%s · PACKETPACK" },
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${pixelify.variable} h-full antialiased`}>
+    <html lang="en" className={`${gameFont.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
         {/* "user": animations stop for people who ask their OS for reduced motion. */}
         <MotionConfig reducedMotion="user">
