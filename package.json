@@ -2,16 +2,17 @@
   "name": "packetpack",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "check": "node scripts/check-data.mts"
+    "check": "node scripts/check-data.mts",
+    "art": "node art/build.mts"
   },
   "dependencies": {
     "framer-motion": "^14.12.0",
-    "lucide-react": "^1.71.0",
     "next": "16.4.6",
     "react": "19.3.0",
     "react-dom": "19.3.0"

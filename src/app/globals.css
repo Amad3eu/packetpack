@@ -1,18 +1,35 @@
 @import "tailwindcss";
 
-/* One warm "night camp" theme: the game look is the brand, so there is no light/dark switch. */
+/* One warm "night workshop" theme: the game look is the brand, so there is no light/dark switch. */
 @theme {
-  --color-night: #1a1426;
-  --color-panel: #2b2238;
-  --color-panel-2: #3a2e4a;
-  --color-ink: #120d1a;
-  --color-parchment: #f3e6c8;
-  --color-gold: #f2c14e;
-  --color-ember: #f28c28;
-  --color-leaf: #8fd17f;
-  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
-  --font-pixel: var(--font-pixelify), var(--font-geist-mono), monospace;
+  --color-night: #141a2e;
+  --color-panel: #251a36;
+  --color-panel-2: #33264a;
+  --color-ink: #140c1c;
+  --color-parchment: #f8ecc8;
+  --color-paper: #ead6a8;
+  --color-gold: #ffe266;
+  --color-ember: #ffb347;
+  --color-leaf: #9ae08a;
+  --font-sans: var(--font-pixelify), ui-monospace, monospace;
+  --font-pixel: var(--font-pixelify), ui-monospace, monospace;
+}
+
+:root {
+  /* One UI pixel. Frames are pre-scaled 3x, so this must stay 3px. */
+  --u: 3px;
+  /* World scale: the room is 320x180 native pixels, always scaled by a whole number. */
+  --s: 2;
+}
+@media (min-width: 1024px) {
+  :root {
+    --s: 3;
+  }
+}
+@media (min-width: 1320px) {
+  :root {
+    --s: 4;
+  }
 }
 
 html {
@@ -20,130 +37,341 @@ html {
 }
 
 body {
-  background-color: var(--color-night);
-  /* Starfield: a few fixed pixels, no image request. */
-  background-image:
-    radial-gradient(2px 2px at 12% 18%, #f3e6c855 50%, transparent 51%),
-    radial-gradient(2px 2px at 78% 12%, #f2c14e66 50%, transparent 51%),
-    radial-gradient(2px 2px at 42% 68%, #f3e6c833 50%, transparent 51%),
-    radial-gradient(2px 2px at 88% 58%, #8fd17f44 50%, transparent 51%),
-    radial-gradient(2px 2px at 24% 88%, #f3e6c844 50%, transparent 51%),
-    linear-gradient(180deg, #1a1426 0%, #221a33 60%, #2a2035 100%);
-  background-attachment: fixed;
+  background: var(--color-night) url(/art/ui/wall.png) repeat;
   color: var(--color-parchment);
+  font-size: 1.0625rem;
+  line-height: 1.5;
+}
+
+.pixelated {
+  image-rendering: pixelated;
+}
+
+h1,
+h2,
+h3,
+.title {
+  text-shadow: var(--u) var(--u) 0 var(--color-ink);
 }
 
 @layer components {
+  /* 9-slice frames: slice = native slice x 3, border width = slice in CSS px. */
   .panel {
-    background: var(--color-panel);
-    border: 4px solid var(--color-ink);
-    box-shadow:
-      inset 0 4px 0 #ffffff12,
-      inset 0 -4px 0 #00000040,
-      0 6px 0 #00000055;
+    border: 18px solid transparent;
+    border-image: url(/art/ui/panel.png) 18 fill / 18px stretch;
   }
-
+  .paper {
+    border: 15px solid transparent;
+    border-image: url(/art/ui/paper.png) 15 fill / 15px stretch;
+    color: var(--color-ink);
+  }
+  .paper h2,
+  .paper h3 {
+    text-shadow: none;
+  }
   .slot {
-    background: var(--color-panel-2);
-    border: 3px solid var(--color-ink);
-    box-shadow: inset 3px 3px 0 #00000040, inset -3px -3px 0 #ffffff0d;
+    border: 12px solid transparent;
+    border-image: url(/art/ui/slot.png) 12 fill / 12px stretch;
   }
-  .slot-active {
-    border-color: var(--color-gold);
+  .slot-on {
+    border-image-source: url(/art/ui/slot-on.png);
+  }
+  .tooltip {
+    border: 12px solid transparent;
+    border-image: url(/art/ui/tooltip.png) 12 fill / 12px stretch;
+    color: var(--color-ink);
+    font-size: 0.95rem;
+    line-height: 1.25;
+    padding: 0 2px;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .field {
+    border: 9px solid transparent;
+    border-image: url(/art/ui/field.png) 9 fill / 9px stretch;
+    color: var(--color-parchment);
+    padding: 0 4px;
+    min-height: 2.75rem;
+  }
+  .field::placeholder {
+    color: #a9a3ec;
   }
 
   .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.4rem;
-    min-height: 2.5rem;
-    padding: 0.4rem 0.9rem;
-    border: 3px solid var(--color-ink);
-    font-weight: 600;
-    font-size: 0.875rem;
-    box-shadow: inset 0 -3px 0 #00000040;
-    transition: transform 120ms, filter 120ms;
+    gap: 8px;
+    min-height: 2.75rem;
+    padding: 0 6px 3px;
+    border: 12px solid transparent;
+    border-image: url(/art/ui/button.png) 12 fill / 12px stretch;
+    color: var(--color-ink);
+    font-family: var(--font-pixel);
+    font-size: 1rem;
+    line-height: 1;
     cursor: pointer;
+    user-select: none;
   }
   .btn:hover:not(:disabled) {
-    transform: translateY(-2px);
-    filter: brightness(1.08);
+    filter: brightness(1.12);
   }
   .btn:active:not(:disabled) {
-    transform: translateY(1px);
+    transform: translateY(var(--u));
   }
   .btn:disabled {
-    opacity: 0.5;
+    filter: grayscale(0.8) brightness(0.7);
     cursor: not-allowed;
   }
-  .btn-primary {
-    background: var(--color-gold);
-    color: var(--color-ink);
-  }
   .btn-ghost {
-    background: var(--color-panel-2);
+    border-image-source: url(/art/ui/button-ghost.png);
     color: var(--color-parchment);
   }
-
-  .item-btn {
-    display: block;
-    cursor: pointer;
-  }
-
-  .field {
-    background: var(--color-night);
-    border: 3px solid var(--color-ink);
-    padding: 0.45rem 0.6rem;
-    color: var(--color-parchment);
+  .btn-sm {
+    min-height: 2.25rem;
+    font-size: 0.9rem;
+    padding: 0 2px 3px;
   }
 
   .chip {
-    border: 3px solid var(--color-ink);
-    background: var(--color-panel-2);
-    padding: 0.2rem 0.6rem;
-    font-size: 0.8rem;
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.25rem;
+    padding: 0 4px 3px;
+    border: 12px solid transparent;
+    border-image: url(/art/ui/button-ghost.png) 12 fill / 12px stretch;
+    color: var(--color-parchment);
+    font-size: 0.95rem;
+    line-height: 1;
     cursor: pointer;
   }
-  .chip[aria-pressed="true"] {
-    background: var(--color-gold);
+  .chip[aria-pressed="true"],
+  .chip[aria-current="page"] {
+    border-image-source: url(/art/ui/button.png);
     color: var(--color-ink);
+  }
+
+  /* A shelf plank under each workbench cell; neighbours join into one board. */
+  .shelf-cell {
+    background: url(/art/ui/plank.png) repeat-x left bottom;
+    padding-bottom: 30px;
   }
 
   .swatch {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    padding: 0.25rem 0.55rem;
-    border: 3px solid var(--color-ink);
-    background: var(--color-panel-2);
+    gap: 8px;
+    padding: 0 4px 3px;
+    border: 12px solid transparent;
+    border-image: url(/art/ui/button-ghost.png) 12 fill / 12px stretch;
     cursor: pointer;
+    font-size: 0.95rem;
   }
   .swatch:has(input:checked) {
-    border-color: var(--color-gold);
+    border-image-source: url(/art/ui/button.png);
+    color: var(--color-ink);
   }
   .swatch:has(input:focus-visible) {
-    outline: 3px solid var(--color-leaf);
+    outline: var(--u) dashed var(--color-leaf);
     outline-offset: 2px;
   }
 
+  .detail-dialog {
+    background: transparent;
+    color: var(--color-parchment);
+  }
   .detail-dialog::backdrop {
     background: #0b0812cc;
   }
   .detail-dialog[open] {
-    animation: pop 180ms ease-out;
+    animation: pop 160ms steps(4) both;
   }
+}
+
+/* ---------- Scene ---------- */
+.scene {
+  position: relative;
+  width: calc(var(--s) * 320px);
+  height: calc(var(--s) * 180px);
+  overflow: hidden;
+}
+.scene > * {
+  position: absolute;
+}
+.sheet {
+  background-repeat: no-repeat;
+  background-size: calc(var(--s) * var(--sheet-w)) calc(var(--s) * var(--sheet-h));
+  image-rendering: pixelated;
+  animation: sheet var(--dur, 1s) steps(var(--frames)) infinite;
+}
+@keyframes sheet {
+  to {
+    background-position-x: calc(var(--s) * var(--sheet-w) * -1);
+  }
+}
+
+.rain {
+  background-image: url(/art/scene/rain-near.png), url(/art/scene/rain-far.png);
+  background-size:
+    calc(var(--s) * 32px) calc(var(--s) * 32px),
+    calc(var(--s) * 32px) calc(var(--s) * 32px);
+  image-rendering: pixelated;
+  animation: rain 0.45s steps(8) infinite;
+}
+@keyframes rain {
+  from {
+    background-position:
+      0 0,
+      calc(var(--s) * 11px) 0;
+  }
+  to {
+    background-position:
+      calc(var(--s) * -4px) calc(var(--s) * 32px),
+      calc(var(--s) * 9px) calc(var(--s) * 16px);
+  }
+}
+
+.blink {
+  animation: blink var(--period, 1s) steps(1) var(--delay, 0s) infinite;
+}
+@keyframes blink {
+  50% {
+    opacity: 0.15;
+  }
+}
+
+.flicker {
+  animation: flicker 5s steps(1) infinite;
+}
+@keyframes flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  46% {
+    opacity: 0.85;
+  }
+  48% {
+    opacity: 1;
+  }
+  71% {
+    opacity: 0.92;
+  }
+  73% {
+    opacity: 1;
+  }
+}
+
+.mote {
+  animation: mote 6s steps(12) var(--delay, 0s) infinite;
+}
+@keyframes mote {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(calc(var(--s) * 6px), calc(var(--s) * -14px));
+    opacity: 0;
+  }
+}
+
+.zzz {
+  animation: zzz 3.6s steps(6) var(--delay, 0s) infinite;
+}
+@keyframes zzz {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(calc(var(--s) * 4px), calc(var(--s) * -10px));
+    opacity: 0;
+  }
+}
+
+/* On wide screens the inventory rises out of the backpack (backpack centre x = 116, top y = 110). */
+@media (min-width: 1024px) {
+  .inventory-float {
+    position: absolute;
+    z-index: 20;
+    left: calc(var(--s) * 116px);
+    bottom: calc(var(--s) * 74px);
+    transform: translateX(-50%);
+  }
+}
+
+/* Items bob one UI pixel at a time, like a game idle loop. */
+.bob {
+  animation: bob 1.4s steps(1) var(--delay, 0s) infinite;
+}
+@keyframes bob {
+  50% {
+    transform: translateY(calc(var(--u) * -1));
+  }
+}
+
+.hover-lift {
+  position: relative;
+}
+.hover-lift .lift {
+  transition: transform 90ms steps(2);
+}
+.hover-lift .drop-shadow {
+  opacity: 0;
+}
+.hover-lift:hover .lift,
+.hover-lift:focus-visible .lift {
+  transform: translateY(calc(var(--u) * -2));
+  animation: none;
+}
+.hover-lift:hover .drop-shadow,
+.hover-lift:focus-visible .drop-shadow {
+  opacity: 1;
+}
+
+/* Pixel tooltip shown on hover or keyboard focus. */
+.has-tip {
+  position: relative;
+}
+.has-tip > .tip {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  display: none;
+}
+.has-tip:hover > .tip,
+.has-tip:focus-visible > .tip,
+.has-tip:focus-within > .tip {
+  display: block;
+}
+
+.hotspot {
+  cursor: pointer;
+}
+.hotspot:hover,
+.hotspot:focus-visible {
+  outline: var(--u) dashed #ffe26699;
+  outline-offset: 2px;
 }
 
 @keyframes pop {
   from {
-    transform: translateY(12px) scale(0.97);
+    transform: translateY(12px) scale(0.96);
     opacity: 0;
   }
 }
 
 :focus-visible {
-  outline: 3px solid var(--color-leaf);
+  outline: var(--u) dashed var(--color-leaf);
   outline-offset: 2px;
 }
 
@@ -152,6 +380,7 @@ body {
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
 }

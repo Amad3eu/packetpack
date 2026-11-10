@@ -3,12 +3,10 @@
 import Link from "next/link";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Scale, Search, X } from "lucide-react";
 import { CATEGORIES, DIFFICULTY_LABEL, equipment, type Difficulty as Level } from "@/data/equipment";
-import { SPRITES } from "@/data/sprites";
 import { Difficulty } from "./difficulty";
 import { PackButton } from "./pack-button";
-import { PixelSprite } from "./pixel-sprite";
+import { Icon, ItemSprite } from "./sprite";
 
 const MAX_COMPARE = 3;
 
@@ -38,13 +36,13 @@ export function Catalog() {
         Search by name, maker or protocol. Tick up to {MAX_COMPARE} items to compare them side by side.
       </p>
 
-      <div className="panel mt-6 space-y-4 p-4">
+      <div className="panel mt-6 space-y-4">
         <label className="relative block">
           <span className="sr-only">Search equipment</span>
-          <Search size={18} aria-hidden className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 opacity-60" />
+          <Icon name="search" className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2" />
           <input
             type="search"
-            className="field w-full pl-10"
+            className="field w-full pl-9"
             placeholder="Try “NFC”, “Hak5” or “SDR”"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -75,11 +73,13 @@ export function Catalog() {
 
       <ul className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {results.map((e) => (
-          <motion.li key={e.slug} layout className="panel flex flex-col p-4">
+          <motion.li key={e.slug} layout className="panel flex flex-col">
             <div className="flex gap-4">
-              <motion.div className="slot h-20 w-20 shrink-0 p-2" whileHover={{ y: -4, rotate: -5 }}>
-                <PixelSprite rows={SPRITES[e.slug]} label={e.name} className="h-full w-full" />
-              </motion.div>
+              <div className="slot hover-lift shrink-0">
+                <span className="lift block">
+                  <ItemSprite slug={e.slug} alt={e.name} />
+                </span>
+              </div>
               <div className="min-w-0">
                 <p className="text-xs uppercase tracking-widest text-gold">{e.category}</p>
                 <h2 className="font-pixel text-xl leading-tight">
@@ -116,13 +116,13 @@ export function Catalog() {
       </ul>
 
       {compared.length > 0 && (
-        <section id="compare" className="panel mt-10 p-4 sm:p-6" aria-labelledby="compare-title">
+        <section id="compare" className="panel mt-10" aria-labelledby="compare-title">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 id="compare-title" className="flex items-center gap-2 font-pixel text-2xl">
-              <Scale size={20} aria-hidden className="text-gold" /> Compare
+              <Icon name="compare" scale={3} /> Compare
             </h2>
             <button type="button" className="btn btn-ghost" onClick={() => setCompare([])}>
-              <X size={16} aria-hidden /> Clear
+              <Icon name="close" /> Clear
             </button>
           </div>
           {compared.length < 2 ? (
@@ -137,7 +137,7 @@ export function Catalog() {
                     </th>
                     {compared.map((e) => (
                       <th key={e.slug} scope="col" className="p-2 align-bottom">
-                        <PixelSprite rows={SPRITES[e.slug]} className="mb-1 h-10 w-10" />
+                        <ItemSprite slug={e.slug} scale={1} className="mb-1" />
                         <span className="font-pixel text-lg">{e.name}</span>
                       </th>
                     ))}
@@ -185,7 +185,7 @@ export function Catalog() {
 
       {compare.length > 0 && (
         <a href="#compare" className="btn btn-primary fixed right-4 bottom-4 z-20 shadow-lg">
-          <Scale size={16} aria-hidden /> Compare ({compare.length})
+          <Icon name="compare" /> Compare ({compare.length})
         </a>
       )}
     </div>

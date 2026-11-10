@@ -1,24 +1,24 @@
 "use client";
 
-import { Minus, Plus } from "lucide-react";
 import { usePack } from "./pack-provider";
+import { Icon } from "./sprite";
 
 export function PackButton({ slug, compact = false }: { slug: string; compact?: boolean }) {
   const pack = usePack();
   const inPack = pack.has(slug);
   const blocked = !inPack && pack.isFull;
-  const label = inPack ? "Remove from pack" : blocked ? "Pack is full" : "Add to pack";
+  const label = inPack ? "Unpack" : blocked ? "Pack is full" : "Pack it";
   return (
     <button
       type="button"
       onClick={() => pack.toggle(slug)}
       disabled={blocked}
       aria-pressed={inPack}
-      aria-label={compact ? label : undefined}
+      aria-label={compact ? `${label}` : undefined}
       title={compact ? label : undefined}
-      className={`btn ${inPack ? "btn-ghost" : "btn-primary"} ${compact ? "px-2" : ""}`}
+      className={`btn ${inPack ? "btn-ghost" : ""} ${compact ? "btn-sm" : ""}`}
     >
-      {inPack ? <Minus size={16} aria-hidden /> : <Plus size={16} aria-hidden />}
+      <Icon name={inPack ? "minus" : "plus"} />
       {!compact && label}
     </button>
   );

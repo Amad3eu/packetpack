@@ -1,11 +1,12 @@
 import { DIFFICULTY_LABEL, type Difficulty as Level } from "@/data/equipment";
+import { Icon } from "./sprite";
 
 export function Difficulty({ level }: { level: Level }) {
   return (
-    <span className="inline-flex items-center gap-1.5 text-xs" title={DIFFICULTY_LABEL[level]}>
-      <span aria-hidden className="flex gap-0.5">
+    <span className="inline-flex items-center gap-2 text-sm">
+      <span className="flex gap-0.5">
         {[1, 2, 3].map((n) => (
-          <span key={n} className={`h-2.5 w-2.5 ${n <= level ? "bg-gold" : "bg-white/15"}`} />
+          <Icon key={n} name={n <= level ? "star" : "star-off"} />
         ))}
       </span>
       {DIFFICULTY_LABEL[level]}

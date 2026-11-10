@@ -1,41 +1,56 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Cpu, KeyRound, Radio, ShieldCheck } from "lucide-react";
-import { BACKPACK_BODY, BACKPACK_FLAP, FLAP_TOP_ROW } from "@/data/sprites";
-import { PACK_COLORS, PATCHES, STRAP_COLORS, type Look } from "./pack-provider";
-import { PixelSprite } from "./pixel-sprite";
+/* eslint-disable @next/next/no-img-element -- pixel art must skip next/image's smoothing resize */
+import { useEffect, useState } from "react";
+import { useReducedMotion } from "framer-motion";
+import type { Look } from "./pack-provider";
 
-const PATCH_ICONS = { shield: ShieldCheck, radio: Radio, chip: Cpu, key: KeyRound };
+const FRAMES = 4;
+const FRAME_MS = 90;
 
-const W = BACKPACK_BODY[0].length;
-const H = BACKPACK_BODY.length;
+/** Plays the zipper frames forwards when opening and backwards when closing. */
+export function usePackFrame(open: boolean) {
+  const [frame, setFrame] = useState(open ? FRAMES - 1 : 0);
+  const reduced = useReducedMotion();
+  useEffect(() => {
+    const target = open ? FRAMES - 1 : 0;
+    if (reduced) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- no animation: jump straight to the end frame
+      setFrame(target);
+      return;
+    }
+    const id = setInterval(() => {
+      setFrame((f) => {
+        if (f === target) {
+          clearInterval(id);
+          return f;
+        }
+        return f + (target > f ? 1 : -1);
+      });
+    }, FRAME_MS);
+    return () => clearInterval(id);
+  }, [open, reduced]);
+  return frame;
+}
 
-export function Backpack({ look, open }: { look: Look; open: boolean }) {
-  const color = PACK_COLORS.find((c) => c.id === look.color) ?? PACK_COLORS[0];
-  const strap = STRAP_COLORS.find((c) => c.id === look.strap) ?? STRAP_COLORS[0];
-  const patch = PATCHES.find((p) => p.id === look.patch) ?? PATCHES[0];
-  const Icon = PATCH_ICONS[patch.id];
-  const colors = { M: color.main, m: color.shade, S: strap.color, P: patch.color };
-
+/**
+ * The layered backpack sprite. It fills its parent, which must have the
+ * 48x48 aspect and a `--px` CSS variable with the size of one sprite pixel.
+ */
+export function BackpackSprite({ look, frame }: { look: Look; frame: number }) {
   return (
-    <div className="relative w-full" style={{ aspectRatio: `${W} / ${H}` }}>
-      <PixelSprite rows={BACKPACK_BODY} colors={colors} className="absolute inset-0 h-full w-full" />
-      {/* The flap lifts and tilts away; the dark row under it is the pack's opening. */}
-      <motion.div
-        className="absolute left-0 w-full origin-top"
-        style={{ top: `${(FLAP_TOP_ROW / H) * 100}%`, height: `${(BACKPACK_FLAP.length / H) * 100}%` }}
-        animate={open ? { y: "-62%", rotate: -10, x: "-6%" } : { y: 0, rotate: 0, x: 0 }}
-        transition={{ type: "spring", stiffness: 160, damping: 14 }}
-      >
-        <PixelSprite rows={BACKPACK_FLAP} colors={colors} className="h-full w-full" />
-        <Icon
-          aria-hidden
-          strokeWidth={2.5}
-          className="absolute text-[#1b1420]"
-          style={{ left: "41%", top: "36%", width: "18%", height: "34%" }}
-        />
-      </motion.div>
-    </div>
+    <span className="absolute inset-0 block" aria-hidden>
+      <span
+        className="pixelated absolute inset-0 block bg-no-repeat"
+        style={{
+          backgroundImage: `url(/art/pack/body-${look.color}.png)`,
+          // --px is a length, so multiply it by plain numbers (px * px is invalid CSS).
+          backgroundSize: `calc(var(--px) * ${48 * FRAMES}) calc(var(--px) * 48)`,
+          backgroundPositionX: `calc(var(--px) * ${-48 * frame})`,
+        }}
+      />
+      <img src={`/art/pack/straps-${look.strap}.png`} alt="" className="pixelated absolute inset-0 h-full w-full" />
+      <img src={`/art/pack/patch-${look.patch}.png`} alt="" className="pixelated absolute inset-0 h-full w-full" />
+    </span>
   );
 }

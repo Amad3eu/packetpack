@@ -21,23 +21,26 @@ PACKETPACK is an educational catalog. Content should help people **understand** 
 ## Adding a device
 
 1. Add an object to `src/data/equipment.ts` and fill in every field. Use an existing entry as a template.
-2. Add a 16×16 sprite to `SPRITES` in `src/data/sprites.ts` under the same `slug`.
-   - One character per pixel and `.` for transparent.
-   - Use colours from `PALETTE` only. If you need a new one, add it there.
+2. Paint a 32×32 sprite: add a function under the same `slug` to `ITEMS` in `art/items.mts`.
+   - Build it from the canvas helpers (`box`, `rect`, `grid`, `circle`) like the existing items: 1 px ink outline, light from the top-left.
+   - Use colours from `art/palette.mts` only. Give the device a silhouette and colours that make it recognizable at a glance.
+   - Run `npm run art` to write `public/art/items/<slug>.png`, and commit the PNG.
 3. List 2–3 `related` slugs, and add your device to the `related` list of at least one existing device.
 4. Run the checks:
 
    ```bash
-   npm run check   # data, sprites and achievement rules
+   npm run check   # data, quest rules, and that public/art matches the art source
    npm run lint
    npm run build
    ```
 
-5. Open `npm run dev` and look at your device in the shelf, the catalog, its profile and the compare table.
+5. Open `npm run dev` and look at your device on the workbench, in the backpack, in the catalog, on its profile and in the compare table.
 
 ## Code changes
 
-- Keep the indie-game look: pixel borders, the night palette and the pixel heading font. Avoid generic dashboard styling.
+- Keep the indie-game look. Draw art in `art/` with the shared palette and show it at whole-number scales with `image-rendering: pixelated`; use the game-menu classes (`panel`, `paper`, `slot`, `btn`, `tooltip`) instead of plain cards. Avoid generic dashboard styling.
+- Never edit `public/art/` by hand: change the source in `art/` and run `npm run art`.
+- Animate in pixel steps (CSS `steps()`), and keep it calm: the room should feel alive, not busy.
 - Keep it accessible. Interactive elements need a visible focus state and a text label, and new animations must respect reduced motion (Framer Motion already does through `MotionConfig`).
 - Check the layout at 375 px wide; the page must not scroll horizontally.
 - Comment the *why* in one line when the code can't show it.
